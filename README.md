@@ -111,7 +111,7 @@ Codex authentication remains local. Do not copy authentication files, API keys, 
 ## Installation
 
 ```bash
-git clone https://github.com/tonnestate/codex-session-controller-v2.0.git
+git clone [https://github.com/tonnestate/codex-session-controller-v2.0.git](https://github.com/tonnestate/codex-session-controller-v2.0.git)
 cd codex-session-controller
 
 mkdir -p "$HOME/.claude/skills/codex-session-controller"
