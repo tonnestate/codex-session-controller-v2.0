@@ -1,4 +1,4 @@
-# Session Controller for OpenAI Codex with Claude Code
+# Session Controller for OpenAI Codex
 
 An independent supervisor specification and Linux helper for maintaining controlled, persistent Codex coding sessions from Claude Code or another orchestration environment.
 
@@ -56,6 +56,21 @@ With the required Codex app-server control surface, a supervisor can:
 
 The central idea is simple: **agent autonomy becomes substantially more useful when session continuity, intervention, permissions, repository ownership, and verification are controlled as first-class state.**
 
+## Rumble Room context
+
+The immediate application context for the Session Controller is the **Rumble Room**: a supervised environment in which multiple coding agents can contribute to the same engineering objective while retaining separate sessions, responsibilities, and verification trails.
+
+The controller supplies the session and repository-control mechanisms required by two Rumble Room collaboration patterns:
+
+| Mode | Working pattern | Role of the Session Controller |
+| --- | --- | --- |
+| **Brother Mode** | Agents cooperate on a shared objective. They divide work into explicit, non-overlapping scopes, pass confirmed state to one another, and continue or review work without discarding the originating session. | Preserve the exact sessions, handoff contracts, write ownership, pending work, and acceptance checks for every contribution. |
+| **Battle Mode** | Agents independently challenge an assumption, implementation, or review result. Their findings or alternative approaches remain separate until the supervisor reconciles the evidence and chooses the next action. | Keep the participating sessions and evidence attributable, prevent uncontrolled overlapping writes, and return accepted findings to the appropriate implementation thread. |
+
+The modes can be used sequentially in one workflow. Brother Mode can produce or extend an implementation; Battle Mode can then challenge it; accepted findings can be returned to the same controlled session for correction and independent validation.
+
+The Session Controller does not implement the complete Rumble Room. It does not choose models, score competing answers, or decide which result should win. It provides the lower-level control plane for persistent sessions, live intervention, approvals, repository ownership, recovery, and validation. Higher-level Rumble Room orchestration determines which agents participate and whether they operate cooperatively or independently.
+
 ## What this repository contains
 
 | Component | Purpose |
@@ -96,7 +111,7 @@ Codex authentication remains local. Do not copy authentication files, API keys, 
 ## Installation
 
 ```bash
-git clone https://github.com/tonnestate/codex-session-controller.git
+git clone https://github.com/TonnEstate/codex-session-controller.git
 cd codex-session-controller
 
 mkdir -p "$HOME/.claude/skills/codex-session-controller"
