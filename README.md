@@ -1,4 +1,4 @@
-# Session Controller for OpenAI Codex for Claude Code
+# Session Controller for OpenAI Codex with Claude Code
 
 An independent supervisor specification and Linux helper for maintaining controlled, persistent Codex coding sessions from Claude Code or another orchestration environment.
 
