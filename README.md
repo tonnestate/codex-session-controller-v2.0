@@ -6,6 +6,56 @@ The project focuses on explicit session identity, bounded delegation, live steer
 
 > **Project status:** v2.0 operational beta. Review the integration and security notes before using it on production repositories.
 
+## Why this project exists
+
+This project grew out of real development work on TonnEstate, where Claude Code and multiple Codex sessions were being used in parallel on large, long-running repositories. The limiting factor was no longer the coding ability of either agent. The limiting factor was continuity and control.
+
+Claude could delegate a task to Codex, but a normal delegation still behaved like a separate one-off job. The supervisor could not reliably treat the running Codex process as an owned, persistent worker:
+
+- a restart or context compaction could separate the current task from the exact Codex session that already understood it;
+- “resume the last session” could select the wrong thread when several repositories or agents were active;
+- new user instructions could arrive while Codex was still working, without a safe way to bind that correction to the active turn;
+- stopping a divergent run often meant abandoning its context and starting again;
+- two agents could modify the same files without a clear transfer of write ownership;
+- a final “done” message did not prove which files changed or whether the result actually passed its checks.
+
+The common workaround was to start another process, replay a large transcript, scrape terminal output, or hope that the newest session was the correct one. That loses information, consumes context, duplicates work, and becomes increasingly unsafe as tasks run longer and more agents work on the same repository.
+
+The Session Controller was created to remove that boundary. It gives the supervising agent an explicit contract for taking control of one exact Codex session, keeping it attached to the intended repository and objective, steering it while it is working, recovering it after interruption, and validating the result before ownership is returned.
+
+## More than a wrapper
+
+This is not merely a command that launches Codex from Claude Code. The product is the control layer around the agent session.
+
+| Without the controller | With the controller |
+| --- | --- |
+| Send a prompt to a separate Codex job. | Transfer a bounded objective to one exact persistent thread. |
+| Guess which prior session should continue. | Resume the recorded `threadId` and verify its repository identity. |
+| Wait for completion before correcting direction. | Steer the active turn using its exact `turnId`. |
+| Kill a bad run and lose continuity. | Interrupt deliberately, inspect partial work, then continue the same controlled workflow. |
+| Let agents share a repository informally. | Assign explicit write ownership and prevent overlapping writers. |
+| Trust a generated completion summary. | Independently inspect the diff and run the required checks. |
+| Replay entire transcripts after restart or compaction. | Reconstruct only the confirmed objective, state, pending work, and evidence. |
+
+This changes the relationship between coding agents. Claude can remain the supervisor, coordinator, and independent verifier while Codex becomes a persistent execution specialist that can work for an extended period without becoming detached from the original task. The user can still intervene, change direction, deny an approval, or stop the work without discarding the whole session.
+
+The result is not just agent-to-agent delegation. It is a foundation for a controlled multi-agent engineering system in which specialized agents can hand work to each other, preserve continuity across long tasks, and remain accountable to one shared repository state.
+
+## What becomes possible
+
+With the required Codex app-server control surface, a supervisor can:
+
+1. take over an existing Codex session instead of replacing it;
+2. preserve the exact thread across Claude compaction, process restarts, and later continuation;
+3. monitor streamed progress and approval requests while Codex is still executing;
+4. inject a new user requirement directly into the active turn;
+5. interrupt divergence without silently switching to a new session;
+6. coordinate several agents through explicit, non-overlapping ownership boundaries;
+7. return failed validation to the same Codex thread so it can correct its own work with full context;
+8. separate implementation from acceptance, so the executing agent is not the only authority deciding that its work is complete.
+
+The central idea is simple: **agent autonomy becomes substantially more useful when session continuity, intervention, permissions, repository ownership, and verification are controlled as first-class state.**
+
 ## What this repository contains
 
 | Component | Purpose |
@@ -46,7 +96,7 @@ Codex authentication remains local. Do not copy authentication files, API keys, 
 ## Installation
 
 ```bash
-git clone https://github.com/tonnestate/codex-session-controller.git
+git clone https://github.com/TonnEstate/codex-session-controller.git
 cd codex-session-controller
 
 mkdir -p "$HOME/.claude/skills/codex-session-controller"
