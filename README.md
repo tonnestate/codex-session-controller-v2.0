@@ -2,7 +2,7 @@
 
 An independent supervisor specification and Linux helper for maintaining controlled, persistent Codex coding sessions from Claude Code or another orchestration environment.
 
-The project focuses on explicit session identity, bounded delegation, live steering, approval handling, single-writer coordination, recovery after interruption, and independent validation of the resulting repository changes.
+The project focuses on explicit session identity, bounded delegation, live steering, approval handling, single-writer coordination, recovery after interruption, and independent validation of the resulting repository changes. It includes a Claude Code Skill.
 
 > **Project status:** v2.0 operational beta. Review the integration and security notes before using it on production repositories.
 
